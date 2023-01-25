@@ -1,0 +1,25 @@
+$box-shadow-standard:  0 1px 1px rgba(0, 0, 0, 0.25);
+
+$color-black: #333333;;
+$colour-secondary: rgba(137, 129, 166, 0.97);
+$color-white: #fff;
+$background-color: linear-gradient(180deg, rgba(187, 168, 222, 0.50) 0%, rgba(250, 240, 246, 0) 100%);
+//$color-meta: gray;
+//$color-danger: #dc3545;
+//$color-danger-highlight: #c82333;
+
+$border-width: 1px;
+$border-radius: 8px;
+
+$font-weight-bold: 700;
+$font-size: 14px;
+$font-size-m: 18px;
+$font-size-l: 32px;
+
+$transition: .2s ease-in-out;
+
+@mixin display($align: center, $justify: center) {
+  display: flex;
+  align-items: $align;
+  justify-content: $justify;
+}
