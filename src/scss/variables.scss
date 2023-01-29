@@ -18,8 +18,9 @@ $font-size-l: 32px;
 
 $transition: .2s ease-in-out;
 
-@mixin display($align: center, $justify: center) {
+@mixin display($direction: row, $align: center, $justify: center) {
   display: flex;
   align-items: $align;
   justify-content: $justify;
+  flex-direction: $direction;
 }

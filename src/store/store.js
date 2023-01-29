@@ -1,43 +1,55 @@
-import { defineStore } from 'pinia'
+import {defineStore} from 'pinia'
+import axios from "axios";
 
-export const store = defineStore({
-        // state is the data being stored in the data store
-        state: () => ({
-            // List of Objects representing the weather for cities:
-            //   - cityName: name of the city
-            //   - stateName: name of the state (if applicable)
-            //   - countryAbbreviation: abbreviation of the country
-            //   - weatherSummary: brief description of the current weather
-            //   - currentTemperature: current temperature (in degrees F)
-            //   - dailyHigh: high temperature (in degrees F) for today
-            //   - dailyLow: low temperature (in degrees F) for today
-            weatherData: []
-        }),
+const apiLocation = 'https://geocoding-api.open-meteo.com/v1/search'
+const apiBase = 'https://api.open-meteo.com/v1/forecast'
 
-        // getters return data from the data store
-        getters: {
-            getNumberOfCities: (state) => { return state.weatherData.length }
+export const useStore = defineStore('weather', {
+    state: () => ({
+        isError: false,
+        weatherData: []
+    }),
+
+    getters: {
+        getCards(state) {
+            return state.weatherData
         },
+    },
+    actions: {
+        async addCity(search) {
+            try {
+                const locationResponse = await axios.get(
+                    `${apiLocation}?name=${search}`
+                );
+                const latitude = locationResponse.data.results[0].latitude
+                const longitude = locationResponse.data.results[0].longitude
+                const name = locationResponse.data.results[0].name
 
-        // actions are operations that change the state
-        actions: {
-            addCity(city, state, country, summary, currentTemp, high, low) {
-                // Check if the city is already saved
-                if (this.weatherData.find(({ cityName }) => cityName === city) === undefined) {
-                    this.weatherData.push({
-                        'cityName': city,
-                        'stateName': state,
-                        'countryAbbreviation': country,
-                        'weatherSummary': summary,
-                        'currentTemperature': currentTemp,
-                        'dailyHigh': high,
-                        'dailyLow': low
-                    })
+                const weatherResponse = await axios.get(
+                    `${apiBase}?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m`
+                );
+                if (this.weatherData.find(({cityName}) => cityName === name) === undefined) {
+                    const weatherData = {
+                        cityName: name,
+                        country: locationResponse.data.results[0].country,
+                        locationData: {
+                            latitude: latitude,
+                            longitude: longitude,
+                        },
+                        temperatureHistory: weatherResponse.data.hourly,
+                        currentWeather: weatherResponse.data['current_weather']
+                    }
+                    console.log(weatherData)
+                    this.weatherData.push(weatherData)
                 }
-            },
-            clearAllCities() {
-                // Setting the `weatherData` array to a length of zero clears it
-                this.weatherData.length = 0
+            } catch
+                (error) {
+                console.log(error);
             }
+        },
+        clearAllCities() {
+            // Setting the `weatherData` array to a length of zero clears it
+            this.weatherData.length = 0
         }
-    })
+    }
+})

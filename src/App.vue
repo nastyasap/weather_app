@@ -1,20 +1,39 @@
 <template>
   <div class="container">
-    <SearchField/>
-    <WeatherCard/>
+    <search-field @addCity="addCity"/>
+    <card-list :cards="cards"/>
   </div>
 </template>
 
 <script>
-import SearchField from './components/SearchField.vue'
-import WeatherCard from './components/WeatherCard.vue'
+import {useStore} from "@/store/store";
+import SearchField from '@/components/SearchField.vue'
+import CardList from '@/components/CardsList.vue'
 
 export default {
   name: 'App',
   components: {
     SearchField,
-    WeatherCard
+    CardList
+  },
+  setup() {
+    const store = useStore()
+    return {store}
+  },
+  data() {
+    return {
+      cards: []
+    }
+  },
+  methods: {
+    addCity(search) {
+      this.store.addCity(search)
+    }
+  },
+  mounted() {
+    this.cards = this.store.getCards
   }
+
 }
 </script>
 
@@ -24,7 +43,6 @@ export default {
   padding: 20px 15px;
   margin: 0;
   width: 100%;
-  height: 100vh;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
