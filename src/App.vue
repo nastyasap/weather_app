@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <search-field @addCity="addCity"/>
-    <card-list :cards="cards"/>
+    <search-field :is-error="isError" @addCity="addCity"/>
+    <card-list :cards="cards" @remove="removeCard"/>
   </div>
 </template>
 
@@ -22,18 +22,21 @@ export default {
   },
   data() {
     return {
-      cards: []
+      cards: [],
+      isError: this.store.isError
     }
   },
   methods: {
     addCity(search) {
       this.store.addCity(search)
+    },
+    removeCard(cityName) {
+      this.store.removeCity(cityName)
     }
   },
   mounted() {
     this.cards = this.store.getCards
   }
-
 }
 </script>
 

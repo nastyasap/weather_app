@@ -1,14 +1,15 @@
 <template>
   <div class="wrapper">
-    <h2>Get weather for city</h2>
+    <h2 class="title">Weather</h2>
     <div class="searchField">
       <input class="input"
              type="text"
-             placeholder="Inter city..."
+             placeholder="Enter a city..."
              v-model.trim="search"
              @keydown.enter="addCity"/>
       <button class="button" @click="addCity">Search</button>
     </div>
+    <span v-if="isError">City is not found</span>
   </div>
 </template>
 
@@ -19,6 +20,12 @@ export default {
   data() {
     return {
       search: ''
+    }
+  },
+  props: {
+    isError: {
+      type: Boolean,
+      required: true
     }
   },
   methods: {
@@ -35,6 +42,10 @@ export default {
   @include display(column, flex-start);
   gap: 10px;
   width: 100%;
+
+  .title {
+    margin: 8px 0;
+  }
 
   .searchField {
     display: flex;

@@ -1,10 +1,11 @@
 <template>
-  <h2>List of cities</h2>
   <div class="cards" v-if="cards.length > 0">
     <weather-card
+        v-for="card in cards"
         :card="card"
         :key="card.cityName"
-        v-for="card in cards"/>
+        @remove="$emit('remove', card.cityName)"
+    />
   </div>
   <h2 v-else>List of cities is empty</h2>
 </template>

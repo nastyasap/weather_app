@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia'
 import axios from "axios";
+import {useStorage} from '@vueuse/core'
 
 const apiLocation = 'https://geocoding-api.open-meteo.com/v1/search'
 const apiBase = 'https://api.open-meteo.com/v1/forecast'
@@ -7,7 +8,7 @@ const apiBase = 'https://api.open-meteo.com/v1/forecast'
 export const useStore = defineStore('weather', {
     state: () => ({
         isError: false,
-        weatherData: []
+        weatherData: useStorage('weatherData', [])
     }),
 
     getters: {
@@ -39,17 +40,19 @@ export const useStore = defineStore('weather', {
                         temperatureHistory: weatherResponse.data.hourly,
                         currentWeather: weatherResponse.data['current_weather']
                     }
-                    console.log(weatherData)
                     this.weatherData.push(weatherData)
                 }
             } catch
                 (error) {
+                this.isError = true
                 console.log(error);
             }
         },
-        clearAllCities() {
-            // Setting the `weatherData` array to a length of zero clears it
-            this.weatherData.length = 0
+        removeCity(cityName) {
+            const index = this.weatherData.findIndex(city => city.cityName === cityName)
+            if (index > -1) {
+                this.weatherData.splice(index, 1)
+            }
         }
     }
 })
