@@ -4,7 +4,7 @@
         v-for="card in cards"
         :card="card"
         :key="card.cityName"
-        @remove="$emit('remove', card.cityName)"
+        @remove="removeCard"
     />
   </div>
   <h2 v-else>List of cities is empty</h2>
@@ -12,6 +12,7 @@
 
 <script>
 import WeatherCard from "@/components/WeatherCard";
+import {useStore} from "@/store/store";
 
 export default {
   name: "CardsList",
@@ -22,6 +23,15 @@ export default {
       required: true
     }
   },
+  setup() {
+    const store = useStore()
+    return {store}
+  },
+  methods: {
+    removeCard(cityName) {
+      this.store.removeCity(cityName)
+    }
+  }
 }
 </script>
 

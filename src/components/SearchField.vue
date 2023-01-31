@@ -8,15 +8,18 @@
              v-model.trim="search"
              @keydown.enter="addCity"/>
       <button class="button" @click="addCity">Search</button>
+      <custom-loader v-if="isLoading"/>
     </div>
-    <span v-if="isError">City is not found</span>
+    <span v-if="isError" class="error">City is not found</span>
   </div>
 </template>
 
 <script>
+import CustomLoader from "@/components/CustomLoader";
 
 export default {
   name: 'SearchField',
+  components: {CustomLoader},
   data() {
     return {
       search: ''
@@ -24,6 +27,10 @@ export default {
   },
   props: {
     isError: {
+      type: Boolean,
+      required: true
+    },
+    isLoading: {
       type: Boolean,
       required: true
     }
@@ -45,6 +52,10 @@ export default {
 
   .title {
     margin: 8px 0;
+  }
+
+  .error {
+    color: $color-error
   }
 
   .searchField {

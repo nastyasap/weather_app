@@ -8,6 +8,7 @@ const apiBase = 'https://api.open-meteo.com/v1/forecast'
 export const useStore = defineStore('weather', {
     state: () => ({
         isError: false,
+        isLoading: false,
         weatherData: useStorage('weatherData', [])
     }),
 
@@ -15,10 +16,18 @@ export const useStore = defineStore('weather', {
         getCards(state) {
             return state.weatherData
         },
+        getError(state) {
+            return state.isError
+        },
+        getLoading(state) {
+            return state.isLoading
+        },
     },
     actions: {
         async addCity(search) {
             try {
+                this.isError = false
+                this.isLoading = true
                 const locationResponse = await axios.get(
                     `${apiLocation}?name=${search}`
                 );
@@ -29,7 +38,7 @@ export const useStore = defineStore('weather', {
                 const weatherResponse = await axios.get(
                     `${apiBase}?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=temperature_2m`
                 );
-                if (this.weatherData.find(({cityName}) => cityName === name) === undefined) {
+                if (this.weatherData.findIndex(({cityName}) => cityName === name) === -1) {
                     const weatherData = {
                         cityName: name,
                         country: locationResponse.data.results[0].country,
@@ -40,12 +49,15 @@ export const useStore = defineStore('weather', {
                         temperatureHistory: weatherResponse.data.hourly,
                         currentWeather: weatherResponse.data['current_weather']
                     }
-                    this.weatherData.push(weatherData)
+                    if (this.weatherData.length === this.weatherData.push(weatherData)) {
+                        this.isError = true
+                    } else this.isError = false
                 }
             } catch
                 (error) {
                 this.isError = true
-                console.log(error);
+            } finally {
+                this.isLoading = false
             }
         },
         removeCity(cityName) {
